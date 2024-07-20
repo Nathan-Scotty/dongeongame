@@ -163,19 +163,4 @@ const gameOver = () => {
     });
 };
 
-document.getElementById('btn').addEventListener('click', () => {
-    const modal = document.getElementById('confirmExitModal');
-    modal.style.display = 'block';
-});
-
-document.getElementById('confirmYes').addEventListener('click', () => {
-    window.close();
-});
-
-document.getElementById('confirmNo').addEventListener('click', () => {
-    const modal = document.getElementById('confirmExitModal');
-    modal.style.display = 'none';
-});
-
-
 drawWorld();
