@@ -163,4 +163,10 @@ const gameOver = () => {
     });
 };
 
+document.getElementById('btn').addEventListener('click', () => {
+    if (confirm('Voulez-vous quitter le jeu ?')) {
+        window.close();
+    }
+});
+
 drawWorld();
