@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet final</title>
+
+
+    <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script type="module" src="./js/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Dongeon Explorer</h1>
+    </header>
+    <main>
+        <div class="wrapper">
+            <div class="progressbar">
+                <div id="pourcent"><span>40/40</span></div>
+            </div>
+            <div class="cercle">Score : <span id="score">0</span></div>
+        </div>
+        <div id="world"></div>
+        <p>
+            <input type="button" value="QUITTEZ LE JEU" id="btn">
+        </p>
+        <div id="endScreen">
+            <h1>GAME OVER</h1>
+        </div>
+    </main>
+</body>
+</html>
