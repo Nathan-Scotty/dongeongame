@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="./css/style.css">
     <script type="module" src="./js/main.js" defer></script>
 </head>
+
 <body>
     <header>
         <h1>Dongeon Explorer</h1>
@@ -23,12 +25,23 @@
             <div class="cercle">Score : <span id="score">0</span></div>
         </div>
         <div id="world"></div>
+        <div class="controls">
+            <button id="btnUp" class="control-btn">↑</button>
+            <div>
+                <button id="btnLeft" class="control-btn">←</button>
+                <button id="btnRight" class="control-btn">→</button>
+            </div>
+            <button id="btnDown" class="control-btn">↓</button>
+        </div>
         <p>
-            <input type="button" value="QUITTEZ LE JEU" id="btn">
+            <input type="button" value="Quitter le jeu" id="btn">
         </p>
         <div id="endScreen">
             <h1>GAME OVER</h1>
+            <button id="retryBtn">Retry</button>
+            <button id="exitBtn">Exit</button>
         </div>
     </main>
 </body>
+
 </html>

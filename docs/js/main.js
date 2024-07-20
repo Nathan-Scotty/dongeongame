@@ -1,172 +1,156 @@
-/**
- * REALISÉ PAR NATHAN KADIBU MUSOKO
- */
-
-// Génération du tableau à deux dimensions
+// Configuration du jeu
 const LARGEUR = 27;
 const HAUTEUR = 17;
 let map = [];
+let pacman = { x: 13, y: 8 };
+let score = 0;
+let pourcent = 40;
+let barEnergie = 100;
+
+// Initialisation du tableau de jeu
 for (let i = 0; i < HAUTEUR; i++) {
     map.push([]);
     for (let j = 0; j < LARGEUR; j++) {
-        // Remplissage du tableau de façon aléatoire
         let z = Math.floor(Math.random() * 3) + 2;
         map[i].push(z);
-
+        
         // Remplissage des bordures
-        if (i === 0 || i === 16 || j === 0 || j === 26) {
+        if (i === 0 || i === HAUTEUR - 1 || j === 0 || j === LARGEUR - 1) {
             map[i][j] = 1;
         }
+        
         // Remplir les espaces vides par des trésors
         if (map[i][j] === 3) {
             map[i][j] = 2;
         }
     }
 }
+map[pacman.y][pacman.x] = 5; // Position initiale de Pacman
 
-// Ajout de murs pour créer des obstacles
-const obstacles = [
-    [6, 2], [7, 4], [8, 6], [9, 8], [10, 9],
-    [8, 11], [8, 15], [8, 9], [3, 14], // Mur horizontal central
-];
-
-for (const [y, x] of obstacles) {
-    map[y][x] = 1;
-}
-
-// Position du pacman dans le tableau
-let pacman = {
-    x: 13,
-    y: 8
-}
-// Affectation du pacman à sa position du tableau
-map[8][13] = 5;
-
-let score = 0;
-let pourcent = 40;
-let barEnergie = 100;
-
-// 1 = <div class='mur'></div> 
-// 2 = <div class='tresor'></div>
-// 3 = <div class='sol'></div> 
-// 4 = <div class='piege'></div>
-// 5 = <div class='pacman'></div>
-
+// Fonction pour dessiner le monde
 const drawWorld = function () {
     const worldElement = document.getElementById('world');
     worldElement.innerHTML = "";
-
     for (let y = 0; y < map.length; y++) {
-        if (pourcent === 0) {
-            gameOver();
-            document.getElementById('endScreen').style.zIndex = 1;
-        }
-
         for (let x = 0; x < map[y].length; x++) {
-            const div = document.createElement('div');
-
+            let className;
             switch (map[y][x]) {
-                case 1:
-                    div.className = 'mur';
-                    break;
-                case 2:
-                    div.className = 'tresor';
-                    break;
-                case 3:
-                    div.className = 'sol';
-                    break;
-                case 4:
-                    div.className = 'piege';
-                    break;
-                case 5:
-                    div.className = 'pacman';
-                    break;
+                case 1: className = 'mur'; break;
+                case 2: className = 'tresor'; break;
+                case 3: className = 'sol'; break;
+                case 4: className = 'piege'; break;
+                case 5: className = 'pacman'; break;
             }
-
-            worldElement.appendChild(div);
+            worldElement.innerHTML += `<div class="${className}"></div>`;
         }
     }
 }
 
-// Bouton exit
-document.getElementById('btn').addEventListener('click', () => {
-    window.close();
-});
+// Fonction pour gérer la fin du jeu
+const gameOver = () => {
+    document.getElementById('endScreen').style.zIndex = 1;
+}
 
-// Détection des touches du clavier
-window.addEventListener('keydown', function (event) {
-    const key = event.key;
+// Fonction pour gérer le mouvement de Pacman
+function movePacman(direction) {
     let newX = pacman.x;
     let newY = pacman.y;
 
-    switch (key) {
-        case 'ArrowLeft':
-            newX--;
-            break;
-        case 'ArrowRight':
-            newX++;
-            break;
-        case 'ArrowUp':
-            newY--;
-            break;
-        case 'ArrowDown':
-            newY++;
-            break;
+    switch (direction) {
+        case 'left': newX -= 1; break;
+        case 'right': newX += 1; break;
+        case 'up': newY -= 1; break;
+        case 'down': newY += 1; break;
     }
 
-    if (map[newY][newX] !== 1) {
-        switch (map[newY][newX]) {
-            case 2:
-                score += 1000;
-                document.getElementById('score').innerText = score;
-                break;
-            case 3:
-                score -= 10;
-                document.getElementById('score').innerText = score;
-                break;
-            case 4:
-                pourcent--;
-                document.querySelector('#pourcent').innerText = pourcent + '/40';
-                barEnergie -= 2.5;
-                document.querySelector('#pourcent').style.width = barEnergie + '%';
-                score -= 50;
-                document.getElementById('score').innerText = score;
-                break;
+    if (map[newY] && map[newY][newX] !== undefined && map[newY][newX] !== 1) {
+        if (map[newY][newX] === 2) {
+            score += 1000;
+        } else if (map[newY][newX] === 3) {
+            score -= 10;
+        } else if (map[newY][newX] === 4) {
+            pourcent -= 1;
+            barEnergie -= 2.5;
+            score -= 50;
         }
 
-        map[pacman.y][pacman.x] = 3;
+        document.getElementById('score').innerText = score;
+        document.querySelector('#pourcent').innerText = pourcent + '/40';
+        document.querySelector('#pourcent').style.width = barEnergie + '%';
+
+        if (pourcent === 0) {
+            gameOver();
+            return;
+        }
+
+        map[pacman.y][pacman.x] = 3; // Réinitialiser l'ancienne position
         pacman.x = newX;
         pacman.y = newY;
-        map[pacman.y][pacman.x] = 5;
+        map[pacman.y][pacman.x] = 5; // Mettre à jour la nouvelle position
 
         drawWorld();
     }
+}
+
+// Gestion des événements de clavier
+window.addEventListener('keydown', function(event) {
+    switch (event.key) {
+        case 'ArrowLeft': movePacman('left'); break;
+        case 'ArrowRight': movePacman('right'); break;
+        case 'ArrowUp': movePacman('up'); break;
+        case 'ArrowDown': movePacman('down'); break;
+    }
 });
 
-const endScreen = document.getElementById('endScreen');
+// Gestion des événements des boutons tactiles
+document.getElementById('btnUp').addEventListener('click', () => movePacman('up'));
+document.getElementById('btnDown').addEventListener('click', () => movePacman('down'));
+document.getElementById('btnLeft').addEventListener('click', () => movePacman('left'));
+document.getElementById('btnRight').addEventListener('click', () => movePacman('right'));
 
-const gameOver = () => {
-    endScreen.innerHTML = `
-        <h1>GAME OVER</h1>
-        <p>Score final: ${score}</p>
-        <button id="replayButton">Rejouer</button>
-        <button id="exitButton">Quitter</button>
-    `;
-    endScreen.style.zIndex = 1;
-
-    document.getElementById('replayButton').addEventListener('click', () => {
-        location.reload();
-    });
-
-    document.getElementById('exitButton').addEventListener('click', () => {
-        window.close();
-    });
-};
-
+// Gestion du bouton Quitter le jeu
 document.getElementById('btn').addEventListener('click', () => {
     if (confirm('Voulez-vous quitter le jeu ?')) {
         window.close();
     }
 });
 
+// Gestion du bouton Retry et Exit dans l'écran de fin
+document.getElementById('retryBtn').addEventListener('click', () => {
+    // Réinitialiser le jeu
+    map = [];
+    pacman = { x: 13, y: 8 };
+    score = 0;
+    pourcent = 40;
+    barEnergie = 100;
+
+    // Réinitialiser le tableau de jeu
+    for (let i = 0; i < HAUTEUR; i++) {
+        map.push([]);
+        for (let j = 0; j < LARGEUR; j++) {
+            let z = Math.floor(Math.random() * 3) + 2;
+            map[i].push(z);
+
+            // Remplissage des bordures
+            if (i === 0 || i === HAUTEUR - 1 || j === 0 || j === LARGEUR - 1) {
+                map[i][j] = 1;
+            }
+
+            // Remplir les espaces vides par des trésors
+            if (map[i][j] === 3) {
+                map[i][j] = 2;
+            }
+        }
+    }
+    map[pacman.y][pacman.x] = 5; // Position initiale de Pacman
+
+    document.getElementById('endScreen').style.zIndex = -1; // Cacher l'écran de fin
+    drawWorld();
+});
+
+document.getElementById('exitBtn').addEventListener('click', () => {
+    window.close();
+});
+
+// Initialiser le jeu
 drawWorld();
